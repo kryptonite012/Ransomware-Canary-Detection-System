@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(45,212,191,0.06), transparent 60%),
+    radial-gradient(1000px 500px at -10% 110%, rgba(59,130,246,0.05), transparent 60%),
+    #0a0e14;
+  color: #e6edf3;
+  font-feature-settings: "cv02", "cv03", "cv04";
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #1e2a3a; border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+@layer components {
+  .card { @apply bg-bg-panel/80 border border-bg-border rounded-xl backdrop-blur-sm; }
+  .card-pad { @apply p-5; }
+  .btn { @apply inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium
+          transition-colors border border-bg-border hover:border-accent/50 disabled:opacity-40
+          disabled:cursor-not-allowed; }
+  .btn-primary { @apply bg-accent/15 text-accent border-accent/30 hover:bg-accent/25; }
+  .btn-danger { @apply bg-risk-critical/10 text-risk-critical border-risk-critical/30
+          hover:bg-risk-critical/20; }
+  .input { @apply bg-bg-soft border border-bg-border rounded-lg px-3 py-2 text-sm text-ink
+          focus:outline-none focus:border-accent/60 w-full; }
+  .label { @apply text-xs uppercase tracking-wider text-ink-faint font-medium; }
+  .chip { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium; }
+  .nav-link { @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-ink-dim
+          hover:text-ink hover:bg-bg-soft transition-colors; }
+  .nav-link-active { @apply bg-accent/10 text-accent; }
+  .th { @apply text-left text-xs uppercase tracking-wider text-ink-faint font-medium px-3 py-2; }
+  .td { @apply px-3 py-2 text-sm border-t border-bg-border/60; }
+}
