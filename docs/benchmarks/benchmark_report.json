@@ -1,0 +1,74 @@
+{
+  "started_at": "2026-11-05T23:01:03.445900+00:00",
+  "finished_at": "2026-11-05T23:01:42.911853+00:00",
+  "detection_rate": 1.0,
+  "false_positive_rate": 0.0,
+  "mean_latency_seconds": 0.047397046750006666,
+  "throughput_events_per_sec": 4.5,
+  "peak_cpu_percent": 91.5,
+  "peak_memory_mb": 106.6,
+  "canary_reliability": 1.0,
+  "scenarios": [
+    {
+      "name": "benign_activity",
+      "malicious": false,
+      "files_touched": 15,
+      "detected": false,
+      "peak_risk": 25.0,
+      "peak_level": "low",
+      "latency_seconds": null,
+      "alerts": 0,
+      "correct": true
+    },
+    {
+      "name": "mass_modification",
+      "malicious": true,
+      "files_touched": 41,
+      "detected": true,
+      "peak_risk": 100.0,
+      "peak_level": "critical",
+      "latency_seconds": 0.11459547499998735,
+      "alerts": 4,
+      "correct": true
+    },
+    {
+      "name": "extension_rename",
+      "malicious": true,
+      "files_touched": 41,
+      "detected": true,
+      "peak_risk": 100.0,
+      "peak_level": "critical",
+      "latency_seconds": 0.050658184999974765,
+      "alerts": 3,
+      "correct": true
+    },
+    {
+      "name": "ransom_notes",
+      "malicious": true,
+      "files_touched": 3,
+      "detected": true,
+      "peak_risk": 100.0,
+      "peak_level": "critical",
+      "latency_seconds": 0.008567861000301491,
+      "alerts": 1,
+      "correct": true
+    },
+    {
+      "name": "canary_modify",
+      "malicious": true,
+      "files_touched": 6,
+      "detected": true,
+      "peak_risk": 100.0,
+      "peak_level": "critical",
+      "latency_seconds": 0.015766665999763063,
+      "alerts": 4,
+      "correct": true
+    }
+  ],
+  "environment": {
+    "platform": "Linux-6.18.44-fc-v236-x86_64-with-glibc2.39",
+    "python": "3.13.18",
+    "cpu_count": 4,
+    "filesystem_backend": "InotifyObserver"
+  }
+}
