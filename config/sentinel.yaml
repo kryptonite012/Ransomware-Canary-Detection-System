@@ -1,0 +1,73 @@
+# PROJECT SENTINEL - bootstrap and default policy configuration.
+#
+# The `agent` section is read only from this file / environment variables.
+# All other sections are *defaults*: the control plane can publish a newer,
+# Ed25519-signed policy which the agent verifies before applying.
+
+agent:
+  endpoint_name: null            # defaults to the hostname
+  data_dir: ./data               # database, keys, evidence vault, snapshots (relative to project root)
+  database_url: null             # default sqlite:///<data_dir>/sentinel.db ; postgresql+psycopg://... supported
+  require_signed_policy: true
+  heartbeat_interval_seconds: 5
+  command_poll_interval_seconds: 2
+  config_poll_interval_seconds: 15
+  queue_size: 50000
+  log_level: INFO
+  log_file: null                 # e.g. ./data/logs/agent.log
+
+monitoring:
+  # Used only until directories are registered through the dashboard/API.
+  directories:
+    - path: ~/Documents
+      recursive: true
+  exclude_directories: []
+  dedup_window_ms: 400
+  inventory_scan_on_start: true
+  inventory_max_files: 250000
+  detect_reads: false
+
+entropy:
+  enabled: true
+  min_file_size: 512
+  high_entropy_threshold: 7.2
+  min_entropy_delta: 1.0
+  text_high_entropy_threshold: 6.0
+
+canary:
+  enabled: true
+  auto_deploy: true
+  auto_regenerate: true
+  verify_interval_seconds: 300
+  names:
+    - Financial_Records_Canary.xlsx
+    - Employee_Database_Canary.csv
+    - Confidential_Archive_Canary.docx
+    - Backup_Index_Canary.txt
+    - Project_Assets_Canary.pdf
+
+behavior:
+  window_seconds: 10
+  mass_modification_threshold: 60
+  directory_spread_threshold: 6
+  extension_change_threshold: 5
+  mass_deletion_threshold: 30
+
+risk:
+  signal_ttl_seconds: 300
+  alert_min_level: elevated
+  incident_min_level: high
+
+response:
+  desktop_notifications: true
+  auto_suspend_on_canary: false
+  auto_protect_directories: false
+  network_isolation:
+    enabled: false
+    dry_run: true
+
+retention:
+  file_events_days: 30
+  entropy_history_days: 90
+  process_days: 30
+  alerts_days: 365

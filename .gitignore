@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime data (databases, keys, evidence, logs) - never commit
+data/
+*.db
+*.db-wal
+*.db-shm
+secrets/
+*.key
+*.pem
+logs/
+.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Simulator / benchmark scratch
+sandbox/
+.sentinel-sandbox*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
