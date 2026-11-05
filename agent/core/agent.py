@@ -316,10 +316,17 @@ class SentinelAgent:
                                                   on_batch)
         self.inventory_scanner.scan(self.monitored_roots(), self._stop)
 
+    # ================================================================== retention
+    def _retention_job(self) -> None:
+        from agent.core.retention import run_retention
+
+        self.last_retention_result = run_retention(self.store, self.config.retention)
+
     # ================================================================== heartbeat
     def _heartbeat_loop(self) -> None:
         last_policy = time.monotonic()
         last_inventory = time.monotonic()
+        last_retention = time.monotonic()
         while not self._stop.wait(self.config.agent.heartbeat_interval_seconds):
             now = time.monotonic()
             if now - last_policy >= self.config.agent.config_poll_interval_seconds:
@@ -331,6 +338,9 @@ class SentinelAgent:
             if now - last_inventory >= self.config.monitoring.inventory_rescan_hours * 3600:
                 last_inventory = now
                 self._spawn(self._inventory_job, "sentinel-inventory")
+            if now - last_retention >= self.config.retention.run_interval_hours * 3600:
+                last_retention = now
+                self._spawn(self._retention_job, "sentinel-retention")
             self.self_writes.purge()
             risk = self.engines.risk_snapshot() if self.engines is not None else None
             status = "degraded" if (not self.monitor.alive or self.queue.dropped) else "online"

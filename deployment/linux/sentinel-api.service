@@ -1,0 +1,30 @@
+[Unit]
+Description=PROJECT SENTINEL control plane / dashboard API
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=sentinel
+Group=sentinel
+WorkingDirectory=/opt/sentinel
+Environment=SENTINEL_CONFIG=/etc/sentinel/sentinel.yaml
+Environment=SENTINEL_API_HOST=127.0.0.1
+Environment=SENTINEL_API_PORT=8443
+# Provide TLS material in production:
+# Environment=SENTINEL_API_TLS_CERTFILE=/etc/sentinel/tls/fullchain.pem
+# Environment=SENTINEL_API_TLS_KEYFILE=/etc/sentinel/tls/privkey.pem
+ExecStart=/opt/sentinel/venv/bin/python -m backend run
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/sentinel /var/log/sentinel
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

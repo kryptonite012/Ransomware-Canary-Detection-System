@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PROJECT SENTINEL agent launchd daemon. Install to /Library/LaunchDaemons/
+     and load with: sudo launchctl load -w /Library/LaunchDaemons/com.sentinel.agent.plist -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.sentinel.agent</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/sentinel/venv/bin/python</string>
+    <string>-m</string><string>agent</string><string>run</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>SENTINEL_CONFIG</key><string>/etc/sentinel/sentinel.yaml</string>
+    <key>SENTINEL_LOG_FORMAT</key><string>json</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>/var/log/sentinel/agent.out.log</string>
+  <key>StandardErrorPath</key><string>/var/log/sentinel/agent.err.log</string>
+</dict>
+</plist>

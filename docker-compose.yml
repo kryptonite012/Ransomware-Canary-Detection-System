@@ -1,0 +1,51 @@
+# PROJECT SENTINEL - local deployment.
+# The agent and API share a data volume (database, control-plane keys, evidence).
+# For a production enterprise deployment, switch the database to PostgreSQL by
+# uncommenting the `db` service and setting SENTINEL_DATABASE_URL.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: deployment/docker/Dockerfile
+    command: ["python", "-m", "backend", "run"]
+    environment:
+      SENTINEL_API_HOST: "0.0.0.0"
+      SENTINEL_API_PORT: "8443"
+      SENTINEL_API_BOOTSTRAP_ADMIN_USERNAME: "${SENTINEL_ADMIN_USER:-admin}"
+      SENTINEL_API_BOOTSTRAP_ADMIN_PASSWORD: "${SENTINEL_ADMIN_PASSWORD:?set SENTINEL_ADMIN_PASSWORD in .env}"
+      # SENTINEL_DATABASE_URL: "postgresql+psycopg://sentinel:${POSTGRES_PASSWORD}@db:5432/sentinel"
+    volumes:
+      - sentinel-data:/var/lib/sentinel
+    ports:
+      - "127.0.0.1:8443:8443"
+    restart: unless-stopped
+    # depends_on: [db]
+
+  agent:
+    build:
+      context: .
+      dockerfile: deployment/docker/Dockerfile
+    command: ["python", "-m", "agent", "run"]
+    environment:
+      SENTINEL_LOG_FORMAT: "json"
+      # SENTINEL_DATABASE_URL: "postgresql+psycopg://sentinel:${POSTGRES_PASSWORD}@db:5432/sentinel"
+    volumes:
+      - sentinel-data:/var/lib/sentinel
+      # Mount the directories to protect (read/write so canaries can be deployed):
+      - "${SENTINEL_WATCH_DIR:-./sandbox}:/data/protected"
+    restart: unless-stopped
+    # depends_on: [db]
+
+  # db:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: sentinel
+  #     POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}"
+  #     POSTGRES_DB: sentinel
+  #   volumes:
+  #     - sentinel-db:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+volumes:
+  sentinel-data:
+  # sentinel-db:

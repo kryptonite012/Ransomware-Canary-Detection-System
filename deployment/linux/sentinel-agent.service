@@ -1,0 +1,48 @@
+[Unit]
+Description=PROJECT SENTINEL ransomware detection agent
+Documentation=https://github.com/kryptonite012/Ransomware-Canary-Detection-System
+After=network.target local-fs.target
+Wants=network.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+# Run as root only where privileged process attribution is required; otherwise
+# a dedicated low-privilege user with read access to the monitored trees is
+# strongly preferred (see LINUX_DEPLOYMENT.md).
+User=sentinel
+Group=sentinel
+WorkingDirectory=/opt/sentinel
+Environment=SENTINEL_CONFIG=/etc/sentinel/sentinel.yaml
+Environment=SENTINEL_LOG_FORMAT=json
+ExecStart=/opt/sentinel/venv/bin/python -m agent run
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+WatchdogSec=60
+
+# --- hardening ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+# Agent state (database, keys, evidence, snapshots) is writable here:
+ReadWritePaths=/var/lib/sentinel /var/log/sentinel
+CapabilityBoundingSet=
+# For privileged process attribution (fanotify/audit), instead set:
+#   AmbientCapabilities=CAP_SYS_PTRACE CAP_DAC_READ_SEARCH
+#   CapabilityBoundingSet=CAP_SYS_PTRACE CAP_DAC_READ_SEARCH
+
+[Install]
+WantedBy=multi-user.target
