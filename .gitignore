@@ -33,3 +33,8 @@ sandbox/
 Thumbs.db
 .idea/
 .vscode/
+
+# Benchmark runtime data (never commit)
+bench-data/
+docs/benchmarks/bench-data/
+benchmark-results/

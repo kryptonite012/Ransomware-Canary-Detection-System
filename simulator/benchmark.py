@@ -209,9 +209,14 @@ class Benchmark:
 
 
 def run_benchmark(base_dir: Path, output_dir: Path) -> BenchmarkReport:
+    import tempfile
+
     from agent.core.config import SentinelConfig
 
-    data_dir = output_dir / "bench-data"
+    # The agent's runtime data (database, keys, evidence vault) is throwaway for a
+    # benchmark run, so keep it in a temp directory - never under output_dir, which
+    # may be committed to the repo.
+    data_dir = Path(tempfile.mkdtemp(prefix="sentinel-bench-"))
     sandbox = Sandbox.create(base_dir, "sentinel-benchmark")
     cfg = SentinelConfig.model_validate({
         "agent": {"data_dir": str(data_dir), "endpoint_name": "benchmark-endpoint",
@@ -228,6 +233,8 @@ def run_benchmark(base_dir: Path, output_dir: Path) -> BenchmarkReport:
         report = Benchmark(cfg, sandbox).run()
     finally:
         sandbox.destroy()
+        import shutil
+        shutil.rmtree(data_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "benchmark_report.json").write_text(json.dumps(asdict(report), indent=2))
     (output_dir / "benchmark_report.md").write_text(report.to_markdown())
