@@ -68,6 +68,7 @@ class DetectionCoordinator:
         self.entropy_dropped = 0
         self.last_verify = 0.0
         self._deployed_dirs: set[str] = set()
+        self._triggered_canaries: set[int] = set()
 
     # ================================================================= lifecycle
     def start(self) -> None:
@@ -194,11 +195,13 @@ class DetectionCoordinator:
         update = self.risk.add_signal(signal_type, desc, severity_hint="high",
                                       evidence={"path": trig.path, "detected_by": trig.detected_by,
                                                 "interaction": trig.interaction})
-        # Multiple distinct canaries hit -> extra confidence signal.
-        if self.canary.triggers >= 2:
-            update = self.risk.add_signal("multiple_canaries",
-                                          f"{self.canary.triggers} canary interactions observed",
-                                          severity_hint="high")
+        # Multiple *distinct* canaries hit -> extra confidence signal.
+        self._triggered_canaries.add(trig.canary_id)
+        if len(self._triggered_canaries) >= 2:
+            update = self.risk.add_signal(
+                "multiple_canaries",
+                f"{len(self._triggered_canaries)} distinct canaries interacted with",
+                severity_hint="high", evidence={"distinct_canaries": len(self._triggered_canaries)})
         self._emit(DetectionContext("canary", update, canary=trig, pid=pid, process_name=process_name,
                                     detail=desc))
 
